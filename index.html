@@ -26,28 +26,22 @@
   --alerta:#FF6B5B;
   --ok:#2BB673;
   --radio:18px;
-  /* fondo de la página que rodea al celular (la demo) */
+  /* fondo de la página que rodea al celular (en compu) */
   --pg:#EAF3FA;
-  --pg-sub:#6B7C8F;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--pg:#0D1822;--pg-sub:#9FB3C6;color-scheme:dark}}
-:root[data-theme="dark"]{--pg:#0D1822;--pg-sub:#9FB3C6;color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--pg:#0D1822;color-scheme:dark}}
+:root[data-theme="dark"]{--pg:#0D1822;color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--pg);color:var(--tinta);min-height:100vh}
-.demo-bar{position:sticky;top:0;z-index:20;background:var(--tinta);color:#fff;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:13px}
-.demo-bar b{opacity:.7;font-weight:600;margin-right:4px}
-.demo-bar button{border:0;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;background:#1c3a5c;color:#fff;cursor:pointer}
-.demo-bar button.on{background:var(--cielo);color:var(--tinta)}
-.demo-bar .reset{background:transparent;border:1px solid #3b5a7c;color:#b9cde0}
-.hint{max-width:420px;margin:12px auto 0;padding:0 16px;font-size:13px;color:var(--pg-sub);text-align:center;line-height:1.4}
-.stage{display:flex;justify-content:center;padding:14px 12px 40px}
-.phone{width:100%;max-width:390px;min-height:760px;background:var(--blanco);border-radius:34px;box-shadow:0 20px 60px rgba(11,37,64,.18);overflow:hidden;position:relative;display:flex;flex-direction:column}
-@media(max-width:430px){.stage{padding:0}.phone{border-radius:0;min-height:calc(100vh - 58px);box-shadow:none}}
-.top{background:linear-gradient(160deg,var(--cielo),var(--cielo-fuerte));color:#fff;padding:18px 20px 26px;text-align:center}
+.stage{display:flex;justify-content:center;padding:18px 12px 40px}
+.phone{width:100%;max-width:390px;min-height:calc(100vh - 36px);background:var(--blanco);border-radius:34px;box-shadow:0 20px 60px rgba(11,37,64,.18);overflow:hidden;position:relative;display:flex;flex-direction:column}
+@media(max-width:430px){.stage{padding:0}.phone{border-radius:0;min-height:100vh;box-shadow:none}}
+.top{background:linear-gradient(160deg,var(--cielo),var(--cielo-fuerte));color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 26px;text-align:center}
 .brand{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:.2px;opacity:.95}
 .brand svg{width:24px;height:24px}
 .brand .n::before{content:var(--marca-nombre)}
 .content{padding:18px 20px 28px;flex:1;display:flex;flex-direction:column;gap:14px}
+.con-nav .content{padding-bottom:96px}
 h1{font-size:24px;line-height:1.15}
 h2{font-size:18px}
 p.s{color:var(--gris);font-size:14px;line-height:1.45}
@@ -89,8 +83,8 @@ textarea{resize:none;min-height:84px}
 .tag{display:inline-block;background:#fff;border:1.5px solid var(--linea);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
 .tag.b{background:var(--cielo-claro);border-color:var(--cielo-claro);color:var(--cielo-fuerte)}
 .ficha{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.sheet{position:absolute;inset:0;background:rgba(11,37,64,.45);display:flex;align-items:flex-end;z-index:10}
-.sheet>div{background:#fff;width:100%;border-radius:26px 26px 0 0;padding:22px 20px 26px;display:flex;flex-direction:column;gap:14px;max-height:92%;overflow:auto}
+.sheet{position:fixed;inset:0;background:rgba(11,37,64,.45);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.sheet>div{background:#fff;width:100%;max-width:390px;border-radius:26px 26px 0 0;padding:22px 20px calc(26px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:92%;overflow:auto}
 .alert{border:1.5px solid var(--linea);border-radius:var(--radio);padding:14px;display:flex;flex-direction:column;gap:10px}
 .alert.new{border-color:var(--cielo);background:#F6FBFF}
 .alert .h{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--gris)}
@@ -103,7 +97,14 @@ textarea{resize:none;min-height:84px}
 .foot{text-align:center;font-size:12px;color:var(--gris);margin-top:auto;padding-top:10px}
 .foot a{color:var(--gris);cursor:pointer;text-decoration:underline}
 .note{font-size:12px;color:var(--gris);line-height:1.35}
-.hidden{display:none!important}
+/* barra de abajo (solo el dueño) */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:#fff;border-top:1px solid var(--linea);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:30}
+.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--gris);padding:6px 4px;cursor:pointer;position:relative;font-family:inherit}
+.nav button.on{color:var(--cielo-fuerte)}
+.nav svg{width:24px;height:24px}
+.nav .bd{position:absolute;top:2px;left:calc(50% + 6px);background:var(--alerta);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:17px;height:17px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.pvbar{background:var(--tinta);color:#fff;font-size:13px;display:flex;justify-content:space-between;align-items:center;padding:10px 16px}
+.pvbar a{color:var(--cielo);font-weight:700;cursor:pointer}
 /* fotos en la configuración */
 .pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .pth{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--cielo-claro)}
@@ -111,15 +112,17 @@ textarea{resize:none;min-height:84px}
 .pth .x{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(11,37,64,.7);color:#fff;border:0;font-size:13px;line-height:22px;cursor:pointer}
 .pth .star{position:absolute;left:4px;bottom:4px;background:var(--cielo-fuerte);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:2px 7px}
 /* galería de quien encuentra */
-.gal{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(3,1fr);gap:6px;height:230px;margin-top:-34px;border-radius:22px;overflow:hidden;border:5px solid #fff;box-shadow:0 8px 22px rgba(11,37,64,.15);background:#fff}
+.gal{display:grid;grid-template-columns:2fr 1fr;gap:6px;height:230px;margin-top:-34px;border-radius:22px;overflow:hidden;border:5px solid #fff;box-shadow:0 8px 22px rgba(11,37,64,.15);background:#fff}
 .gal.solo{display:block}
-.gal .m{grid-row:1/4;position:relative}
+.gal .m{position:relative}
 .gal img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
 .gal .t{position:relative;overflow:hidden}
 .gal .more{position:absolute;inset:0;background:rgba(11,37,64,.6);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .galph{height:150px;display:flex;align-items:center;justify-content:center;background:var(--cielo-claro);border-radius:22px;margin-top:-34px;border:5px solid #fff}
 .galph svg{width:60px;height:60px;fill:var(--cielo)}
-.lb{position:absolute;inset:0;background:#000;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mini img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}
+.lb{position:fixed;inset:0;background:#000;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .lb img{max-width:100%;max-height:78%;object-fit:contain}
 .lb .c{color:#fff;font-size:13px;margin-top:10px;opacity:.8}
 .lb button{position:absolute;background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer}
@@ -127,15 +130,6 @@ textarea{resize:none;min-height:84px}
 </style>
 </head>
 <body>
-
-<div class="demo-bar">
-  <b>VER COMO:</b>
-  <button data-v="setup">1 · Chapa nueva</button>
-  <button data-v="finder">2 · Quien la encuentra</button>
-  <button data-v="owner">3 · Panel del dueño</button>
-  <button class="reset" id="reset">Reiniciar</button>
-</div>
-<p class="hint" id="hint"></p>
 
 <div class="stage"><div class="phone" id="phone"></div></div>
 
@@ -145,13 +139,12 @@ textarea{resize:none;min-height:84px}
 
 <script>
 /* ===== Prototipo: guarda todo en este navegador (en la versión real va a un servidor) ===== */
-const CODIGO_DEMO = "ABC123";
-const KEY = "chapita_proto_v2";
-const VACIO = {pet:null,alerts:[],lost:false,view:"setup"};
+const KEY = "chapita_proto_v3";
+const VACIO = {pet:null,alerts:[],lost:false};
 let S = load();
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || JSON.parse(JSON.stringify(VACIO)) }catch(e){ return JSON.parse(JSON.stringify(VACIO)) } }
-let aviso = "";
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ aviso="Se llenó la memoria del navegador de la demo: probá con menos fotos."; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ alert_mem=true } }
+let alert_mem=false;
 const $ = s => document.querySelector(s);
 const phone = $("#phone");
 const esc = t => String(t==null?"":t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -162,33 +155,41 @@ const hora = ts => new Date(ts).toLocaleTimeString("es-AR",{hour:"2-digit",minut
 const soloNum = n => String(n||"").replace(/\D/g,"");
 const waNum = n => n.length<=10 ? "54"+n : n;
 function abrir(url){ const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); }
-const HINTS = {
-  setup:"Esto es lo que ve el dueño la primera vez que escanea o toca su chapa nueva. Código de la tarjeta de la caja (en esta demo): "+CODIGO_DEMO,
-  finder:"Esto es lo que ve cualquier persona que escanea o toca la chapa ya activada. No instala nada.",
-  owner:"Esto es lo que ve el dueño cuando entra a su panel desde la web de la marca."
-};
 const palabra = (p) => { const m = p.sexo==="Hembra"; if(p.especie==="gato") return m?"Gata":"Gato"; if(p.especie==="otro") return "Mascota"; return m?"Perra":"Perro"; };
 
-function go(v){ S.view=v; save(); render(); }
-document.querySelectorAll(".demo-bar [data-v]").forEach(b => b.onclick = () => go(b.dataset.v));
-let resetArmado=false;
-$("#reset").onclick = () => {
-  const b=$("#reset");
-  if(!resetArmado){ resetArmado=true; b.textContent="¿Seguro? Tocá de nuevo"; setTimeout(()=>{resetArmado=false;b.textContent="Reiniciar"},3000); return; }
-  resetArmado=false; b.textContent="Reiniciar"; draft=null; try{localStorage.removeItem(KEY)}catch(e){} S=JSON.parse(JSON.stringify(VACIO)); render();
-};
+/* ---------- estado de pantalla ---------- */
+let tab="inicio", pv=false, draft=null, editing=false, justActivated=false;
+const esChapa = () => location.hash==="#chapa";
+window.addEventListener("hashchange", () => render());
 
 function render(){
-  document.querySelectorAll(".demo-bar [data-v]").forEach(b => b.classList.toggle("on", b.dataset.v===S.view));
-  $("#hint").textContent = HINTS[S.view] || "";
-  if(S.view==="setup") return S.pet ? viewActivated() : viewSetup(false);
-  if(S.view==="finder") return viewFinder();
-  if(S.view==="owner") return viewOwner();
+  document.body.classList.remove("con-nav");
+  if(!S.pet) return viewSetup("new");
+  if(justActivated) return viewActivated();
+  if(editing) return viewSetup("pet");
+  if(esChapa() || pv) return viewFinder();
+  document.body.classList.add("con-nav");
+  if(tab==="mascota") return viewMascota();
+  if(tab==="ajustes") return viewAjustes();
+  return viewInicio();
+}
+function irApp(t){ pv=false; if(location.hash) location.hash=""; tab=t||"inicio"; render(); window.scrollTo(0,0); }
+
+/* ---------- barra de abajo ---------- */
+function navHTML(){
+  const n=S.alerts.filter(a=>!a.resuelto).length;
+  const b=(k,txt,svg)=>`<button data-tab="${k}" class="${tab===k?"on":""}">${svg}<span>${txt}</span>${k==="inicio"&&n?`<span class="bd">${n}</span>`:""}</button>`;
+  return `<nav class="nav">`
+   + b("inicio","Inicio",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>')
+   + b("mascota","Mi mascota",'<svg viewBox="0 0 64 64" fill="currentColor"><use href="#paw"/></svg>')
+   + b("ajustes","Ajustes",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg>')
+   + `</nav>`;
 }
 
-/* ---------- clicks generales (chips, fotos, galería) ---------- */
-let draft = null;
+/* ---------- clicks generales ---------- */
 phone.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]");
+  if(t){ tab=t.dataset.tab; render(); window.scrollTo(0,0); return; }
   const chip = e.target.closest(".chip[data-g]");
   if(chip && draft){
     const g=chip.dataset.g, v=chip.dataset.v, multi=chip.parentElement.dataset.multi==="1";
@@ -204,7 +205,7 @@ phone.addEventListener("click", e => {
   if(g){ abrirVisor(+g.dataset.open); }
 });
 
-/* ---------- 1. ACTIVAR / EDITAR ---------- */
+/* ---------- ACTIVAR (primera vez) / EDITAR MASCOTA ---------- */
 const ESPECIES=[["perro","🐶 Perro"],["gato","🐱 Gato"],["otro","🐾 Otro"]];
 const CARACTER=["Mansa/o","Tímida/o","Juguetona/o","Se asusta con ruidos","No muerde","Responde a su nombre","Se lleva bien con otros"];
 function chipsHTML(g, opts, multi){
@@ -218,12 +219,32 @@ function pintarFotos(){
   el.innerHTML = draft.fotos.map((f,i)=>`<div class="pth"><img src="${f}" data-main="${i}" alt="">${i===0?'<span class="star">Principal</span>':''}<button class="x" data-del="${i}" type="button">✕</button></div>`).join("");
   const n=$("#ncount"); if(n) n.textContent = draft.fotos.length ? `${draft.fotos.length} foto${draft.fotos.length>1?"s":""} · tocá una para hacerla principal` : "Todavía no cargaste fotos.";
 }
-function viewSetup(edit){
-  if(!draft) draft = edit ? JSON.parse(JSON.stringify(S.pet)) : {especie:"perro",sexo:"",tamano:"",caracter:[],fotos:[],canalWa:true,canalMail:true};
+function contactoHTML(d){
+  return `<div class="field"><label>Tu nombre</label><input id="f_dueno" placeholder="Ej: Fran" value="${esc(d.dueno)}"></div>
+    <div class="field"><label>Tu WhatsApp</label><input id="f_wa" inputmode="tel" placeholder="Ej: 223 555 1234" value="${esc(d.wa)}"></div>
+    <div class="field"><label>Tu mail</label><input id="f_mail" type="email" placeholder="tu@mail.com" value="${esc(d.mail)}"></div>
+    <div class="field"><label>¿Cómo querés que te escriba quien la encuentre?</label>
+      <label class="toggle" style="margin-bottom:8px"><span>Por WhatsApp</span><span class="sw"><input type="checkbox" id="f_cwa" ${d.canalWa!==false?"checked":""}><i></i></span></label>
+      <label class="toggle"><span>Por mail</span><span class="sw"><input type="checkbox" id="f_cml" ${d.canalMail!==false?"checked":""}><i></i></span></label>
+      <p class="note" style="margin-top:6px">Quien la encuentre toca un botón y se le abre la conversación con un mensaje ya escrito. Verá el contacto que elijas.</p>
+    </div>`;
+}
+function leerContacto(){
+  const v = id => $("#"+id).value.trim();
+  const wa=soloNum(v("f_wa")), mail=v("f_mail"), cwa=$("#f_cwa").checked, cml=$("#f_cml").checked;
+  if(!v("f_dueno")) return {err:"Poné tu nombre."};
+  if(!wa && !mail) return {err:"Poné al menos tu WhatsApp o tu mail."};
+  if(cwa && !wa) return {err:"Elegiste WhatsApp pero falta tu número."};
+  if(cml && !mail) return {err:"Elegiste mail pero falta tu mail."};
+  if(!cwa && !cml) return {err:"Dejá activado al menos un modo de contacto."};
+  return {dueno:v("f_dueno"), wa, mail, canalWa:cwa, canalMail:cml};
+}
+function viewSetup(mode){
+  const nuevo = mode==="new";
+  if(!draft) draft = nuevo ? {especie:"perro",sexo:"",tamano:"",caracter:[],fotos:[]} : JSON.parse(JSON.stringify(S.pet));
   const d=draft;
-  phone.innerHTML = topBar(`<h1 style="margin-top:14px">${edit?"Editar datos":"Activá tu chapa"}</h1><p style="opacity:.9;font-size:14px;margin-top:4px">${edit?"Cambiá lo que quieras.":"Son 2 minutos. Una sola vez."}</p>`)
+  phone.innerHTML = topBar(`<h1 style="margin-top:14px">${nuevo?"Activá tu chapa":"Editar mi mascota"}</h1><p style="opacity:.9;font-size:14px;margin-top:4px">${nuevo?"Son 2 minutos. Una sola vez.":"Cambiá lo que quieras."}</p>`)
   + `<div class="content">
-    ${edit?"":`<div class="field"><label>Código de activación (viene en la tarjeta de la caja)</label><input id="f_cod" placeholder="Ej: ABC123" autocapitalize="characters" maxlength="10"></div>`}
     <div class="sec-title">Tu mascota</div>
     ${chipsHTML("especie",ESPECIES,false)}
     <div class="field"><label>Nombre</label><input id="f_nom" placeholder="Ej: Luna" value="${esc(d.nombre)}"></div>
@@ -246,38 +267,25 @@ function viewSetup(edit){
     <div class="pgrid" id="pgrid"></div>
     <p class="note" id="ncount"></p>
 
-    <div class="sec-title">Tu contacto</div>
-    <div class="field"><label>Tu nombre</label><input id="f_dueno" placeholder="Ej: Fran" value="${esc(d.dueno)}"></div>
-    <div class="field"><label>Tu WhatsApp</label><input id="f_wa" inputmode="tel" placeholder="Ej: 223 555 1234" value="${esc(d.wa)}"></div>
-    <div class="field"><label>Tu mail</label><input id="f_mail" type="email" placeholder="tu@mail.com" value="${esc(d.mail)}"></div>
-    <div class="field"><label>¿Cómo querés que te escriba quien la encuentre?</label>
-      <label class="toggle" style="margin-bottom:8px"><span>Por WhatsApp</span><span class="sw"><input type="checkbox" id="f_cwa" ${d.canalWa?"checked":""}><i></i></span></label>
-      <label class="toggle"><span>Por mail</span><span class="sw"><input type="checkbox" id="f_cml" ${d.canalMail?"checked":""}><i></i></span></label>
-      <p class="note" style="margin-top:6px">Quien la encuentre toca un botón y se le abre la conversación con un mensaje ya escrito. Verá el contacto que elijas.</p>
-    </div>
-    <button class="btn main" id="guardar">${edit?"Guardar cambios":"Guardar y activar"}</button>
-    ${edit?`<button class="btn ghost" id="cancel">Cancelar</button>`:""}
+    ${nuevo?`<div class="sec-title">Tu contacto</div>${contactoHTML(d)}`:""}
+    <button class="btn main" id="guardar">${nuevo?"Guardar y activar":"Guardar cambios"}</button>
+    ${nuevo?"":`<button class="btn ghost" id="cancel">Cancelar</button>`}
     <p class="note" id="err" style="color:var(--alerta)"></p>
   </div>`;
   pintarFotos();
   const addFotos = async files => { for(const f of files){ const u=await comprimir(f); if(u) draft.fotos.push(u); } pintarFotos(); };
   $("#f_cam").onchange = e => { addFotos([...e.target.files]); e.target.value=""; };
   $("#f_gal").onchange = e => { addFotos([...e.target.files]); e.target.value=""; };
-  if(edit) $("#cancel").onclick = () => { draft=null; go("owner"); };
+  if(!nuevo) $("#cancel").onclick = () => { draft=null; editing=false; render(); };
   $("#guardar").onclick = () => {
     const v = id => $("#"+id).value.trim();
     const err = m => { $("#err").textContent = m; };
-    if(!edit && v("f_cod").toUpperCase()!==CODIGO_DEMO) return err("El código no coincide. En la demo es "+CODIGO_DEMO+".");
     if(!v("f_nom")) return err("Poné el nombre de tu mascota.");
-    if(!v("f_dueno")) return err("Poné tu nombre.");
-    const wa=soloNum(v("f_wa")), mail=v("f_mail"), cwa=$("#f_cwa").checked, cml=$("#f_cml").checked;
-    if(!wa && !mail) return err("Poné al menos tu WhatsApp o tu mail.");
-    if(cwa && !wa) return err("Elegiste WhatsApp pero falta tu número.");
-    if(cml && !mail) return err("Elegiste mail pero falta tu mail.");
-    if(!cwa && !cml) return err("Dejá activado al menos un modo de contacto.");
-    S.pet = Object.assign({}, draft, {nombre:v("f_nom"), edad:v("f_edad"), raza:v("f_raza"), color:v("f_color"), desc:v("f_desc"), salud:v("f_salud"), dueno:v("f_dueno"), wa, mail, canalWa:cwa, canalMail:cml});
-    if(!edit){ S.alerts=[]; S.lost=false; }
-    draft=null; save(); if(edit) go("owner"); else render();
+    let contacto = {};
+    if(nuevo){ contacto = leerContacto(); if(contacto.err) return err(contacto.err); }
+    S.pet = Object.assign({}, nuevo?{}:S.pet, draft, {nombre:v("f_nom"), edad:v("f_edad"), raza:v("f_raza"), color:v("f_color"), desc:v("f_desc"), salud:v("f_salud")}, contacto);
+    if(nuevo){ S.alerts=[]; S.lost=false; justActivated=true; }
+    draft=null; editing=false; save(); render();
   };
 }
 function viewActivated(){
@@ -289,18 +297,17 @@ function viewActivated(){
       <button class="btn main" id="verF">Ver lo que ve quien la encuentra</button>
       <button class="btn sec" id="verO">Ir a mi panel</button>
     </div>`;
-  $("#verF").onclick=()=>go("finder"); $("#verO").onclick=()=>go("owner");
+  $("#verF").onclick=()=>{ justActivated=false; pv=true; render(); window.scrollTo(0,0); };
+  $("#verO").onclick=()=>{ justActivated=false; irApp("inicio"); };
 }
 
-/* ---------- 2. QUIEN LA ENCUENTRA ---------- */
+/* ---------- QUIEN LA ENCUENTRA (pantalla pública, sin barra) ---------- */
 let fType="tengo", sheetOpen=false, ubic=null, ubicOn=true;
 function galeriaHTML(p){
   const f=p.fotos||[];
   if(!f.length) return `<div class="galph"><svg viewBox="0 0 64 64"><use href="#paw"/></svg></div>`;
   if(f.length===1) return `<div class="gal solo"><img src="${f[0]}" data-open="0" alt=""></div>`;
-  const ts=f.slice(1,4);
-  const resto=f.length-4;
-  const alto = ts.length;
+  const ts=f.slice(1,4), resto=f.length-4, alto=ts.length;
   return `<div class="gal" style="grid-template-rows:repeat(${alto},1fr)"><div class="m" style="grid-row:1/${alto+1}"><img src="${f[0]}" data-open="0" alt=""></div>` +
     ts.map((x,i)=>`<div class="t"><img src="${x}" data-open="${i+1}" alt="">${(i===ts.length-1 && resto>0)?`<div class="more">+${resto}</div>`:""}</div>`).join("") + `</div>`;
 }
@@ -310,8 +317,7 @@ function fichaHTML(p){
 }
 function viewFinder(){
   const p=S.pet;
-  if(!p){ phone.innerHTML = topBar()+`<div class="content"><div class="empty">Todavía no hay una chapa activada.<br>Primero hacé el paso 1.</div><button class="btn main" id="a">Ir al paso 1</button></div>`; $("#a").onclick=()=>go("setup"); return; }
-  phone.innerHTML = topBar()
+  phone.innerHTML = (pv?`<div class="pvbar"><span>Así la ve quien la encuentra</span><a id="pvb">← Volver a mi panel</a></div>`:"") + topBar()
   + `<div class="content">
       ${galeriaHTML(p)}
       <div style="text-align:center"><h1>Hola, soy ${esc(p.nombre)} 🐾</h1>
@@ -328,7 +334,8 @@ function viewFinder(){
   + (sheetOpen?sheetHTML():"");
   $("#b1").onclick=()=>abrirSheet("tengo");
   $("#b2").onclick=()=>abrirSheet("vi");
-  $("#soyDueno").onclick=()=>go("owner");
+  $("#soyDueno").onclick=()=>irApp("inicio");
+  if($("#pvb")) $("#pvb").onclick=()=>irApp("mascota");
   if(sheetOpen) wireSheet();
 }
 const baseMsg = () => fType==="tengo" ? `Hola, encontré a ${S.pet.nombre}. ¿Cómo hacemos para que la vengas a buscar?` : `Hola, vi a ${S.pet.nombre} por acá.`;
@@ -382,34 +389,29 @@ function thanks(url, canal, texto){
 let vi=0;
 function abrirVisor(i){
   vi=i; const f=S.pet.fotos;
-  const pinta=()=>{ let lb=$("#lb"); if(!lb){ lb=document.createElement("div"); lb.id="lb"; lb.className="lb"; phone.appendChild(lb); }
+  const pinta=()=>{ let lb=$("#lb"); if(!lb){ lb=document.createElement("div"); lb.id="lb"; lb.className="lb"; document.body.appendChild(lb); }
     lb.innerHTML=`<img src="${f[vi]}" alt=""><div class="c">${vi+1} / ${f.length}</div><button class="cl" id="lbx">✕</button>${f.length>1?'<button class="pv" id="lbp">‹</button><button class="nx" id="lbn">›</button>':''}`;
     $("#lbx").onclick=()=>lb.remove(); if(f.length>1){ $("#lbp").onclick=()=>{vi=(vi-1+f.length)%f.length;pinta()}; $("#lbn").onclick=()=>{vi=(vi+1)%f.length;pinta()}; }
     let x0=null; lb.ontouchstart=e=>x0=e.touches[0].clientX; lb.ontouchend=e=>{ if(x0==null||f.length<2) return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>40){ vi=(vi+(dx<0?1:-1)+f.length)%f.length; pinta(); } x0=null; };
   }; pinta();
 }
 
-/* ---------- 3. PANEL DEL DUEÑO ---------- */
-function viewOwner(){
+/* ---------- APP DEL DUEÑO: Inicio / Mi mascota / Ajustes ---------- */
+function viewInicio(){
   const p=S.pet;
-  if(!p){ phone.innerHTML = topBar()+`<div class="content"><div class="empty">Todavía no activaste ninguna chapa.</div><button class="btn main" id="a">Activar mi chapa</button></div>`; $("#a").onclick=()=>go("setup"); return; }
   const pend = S.alerts.filter(a=>!a.resuelto);
   phone.innerHTML = topBar(`<div class="pet-hero" style="margin-top:14px"><span class="pill ${S.lost?"lost":"ok"}">${S.lost?"● Marcada como perdida":"✔ Protegida"}</span></div>`)
   + `<div class="content">
-      <div class="pet-hero">${avatar(p)}<h1>${esc(p.nombre)}</h1><p class="note">${(p.fotos||[]).length} foto${(p.fotos||[]).length===1?"":"s"} cargada${(p.fotos||[]).length===1?"":"s"}</p></div>
+      <div class="pet-hero">${avatar(p)}<h1>${esc(p.nombre)}</h1></div>
       ${S.lost
         ? `<button class="btn sec" id="enc">✔ Ya la encontré</button>`
         : `<button class="btn lost" id="perd">Marcar como perdida</button><p class="note" style="text-align:center">Así quien la encuentre ve que la estás buscando.</p>`}
       <h2>Avisos${pend.length?` (${pend.length})`:""}</h2>
       ${pend.length? pend.map(alertHTML).join("") : `<div class="empty">Todavía no hay avisos.<br>Cuando alguien te escriba desde la chapa, queda registrado acá.</div>`}
-      <button class="btn sec" id="vf">Ver cómo la ve quien la encuentra</button>
-      <button class="btn ghost" id="edit">Editar datos y fotos de ${esc(p.nombre)}</button>
-    </div>`;
+    </div>` + navHTML();
   const el=id=>document.getElementById(id);
   if(el("perd")) el("perd").onclick=()=>{S.lost=true;save();render()};
   if(el("enc")) el("enc").onclick=()=>{S.lost=false;save();render()};
-  el("vf").onclick=()=>go("finder");
-  el("edit").onclick=()=>{ draft=null; S.view="setup"; save(); document.querySelectorAll(".demo-bar [data-v]").forEach(b=>b.classList.toggle("on", b.dataset.v==="setup")); $("#hint").textContent="Edición de datos del dueño."; viewSetup(true); };
   document.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>{ const a=S.alerts.find(x=>x.id==b.dataset.res); a.resuelto=true; save(); render(); });
   S.alerts.forEach(a=>a.nuevo=false); save();
 }
@@ -420,6 +422,38 @@ function alertHTML(a){
     <q>${esc(a.msg).replace(/\n/g,"<br>")}</q>${mapa}
     <button class="btn ghost" data-res="${a.id}">Marcar como resuelto</button>
   </div>`;
+}
+function viewMascota(){
+  const p=S.pet, f=p.fotos||[];
+  phone.innerHTML = topBar(`<div class="pet-hero" style="margin-top:14px"><span class="pill ${S.lost?"lost":"ok"}">${S.lost?"● Marcada como perdida":"✔ Protegida"}</span></div>`)
+  + `<div class="content">
+      <div class="pet-hero">${avatar(p)}<h1>${esc(p.nombre)}</h1></div>
+      ${fichaHTML(p)}
+      ${p.desc?`<div class="card"><p class="s" style="color:var(--tinta)">${esc(p.desc)}</p></div>`:""}
+      ${p.salud?`<div class="card"><p class="s" style="color:var(--tinta)"><b>Dato importante:</b> ${esc(p.salud)}</p></div>`:""}
+      ${f.length?`<div class="sec-title">${f.length} foto${f.length===1?"":"s"}</div><div class="mini">${f.slice(0,8).map((x,i)=>`<img src="${x}" data-open="${i}" alt="">`).join("")}</div>`:""}
+      <button class="btn main" id="edit">Editar datos y fotos</button>
+      <button class="btn sec" id="vf">Ver cómo la ve quien la encuentra</button>
+    </div>` + navHTML();
+  $("#edit").onclick=()=>{ draft=null; editing=true; render(); window.scrollTo(0,0); };
+  $("#vf").onclick=()=>{ pv=true; render(); window.scrollTo(0,0); };
+}
+let resetArmado=false;
+function viewAjustes(){
+  const p=S.pet;
+  phone.innerHTML = topBar(`<h1 style="margin-top:14px">Ajustes</h1><p style="opacity:.9;font-size:14px;margin-top:4px">Tu contacto y cómo te escriben.</p>`)
+  + `<div class="content">
+      ${contactoHTML(p)}
+      <button class="btn main" id="gc">Guardar contacto</button>
+      <p class="note" id="err" style="color:var(--alerta)"></p>
+      <div class="foot" style="margin-top:20px"><a id="rst">Reiniciar la demo</a></div>
+    </div>` + navHTML();
+  $("#gc").onclick=()=>{ const c=leerContacto(); if(c.err){ $("#err").textContent=c.err; return; } Object.assign(S.pet,c); save(); $("#err").style.color="var(--ok)"; $("#err").textContent="Guardado ✔"; };
+  $("#rst").onclick=()=>{
+    const b=$("#rst");
+    if(!resetArmado){ resetArmado=true; b.textContent="¿Seguro? Tocá de nuevo para borrar todo"; setTimeout(()=>{resetArmado=false; if($("#rst")) $("#rst").textContent="Reiniciar la demo"},3000); return; }
+    resetArmado=false; draft=null; editing=false; pv=false; justActivated=false; try{localStorage.removeItem(KEY)}catch(e){} S=JSON.parse(JSON.stringify(VACIO)); if(location.hash) location.hash=""; tab="inicio"; render();
+  };
 }
 
 render();
