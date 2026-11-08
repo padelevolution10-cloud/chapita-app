@@ -103,6 +103,9 @@ textarea{resize:none;min-height:84px}
 .nav button.on{color:var(--cielo-fuerte)}
 .nav svg{width:24px;height:24px}
 .nav .bd{position:absolute;top:2px;left:calc(50% + 6px);background:var(--alerta);color:#fff;font-size:10px;font-weight:800;border-radius:999px;min-width:17px;height:17px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.ccard{border:1.5px solid var(--linea);border-radius:var(--radio);padding:14px;display:flex;flex-direction:column;gap:10px}
+.chead{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.quitar{border:0;background:none;color:var(--alerta);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
 .pvbar{background:var(--tinta);color:#fff;font-size:13px;display:flex;justify-content:space-between;align-items:center;padding:10px 16px}
 .pvbar a{color:var(--cielo);font-weight:700;cursor:pointer}
 /* fotos en la configuración */
@@ -142,7 +145,8 @@ textarea{resize:none;min-height:84px}
 const KEY = "chapita_proto_v3";
 const VACIO = {pet:null,alerts:[],lost:false};
 let S = load();
-function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || JSON.parse(JSON.stringify(VACIO)) }catch(e){ return JSON.parse(JSON.stringify(VACIO)) } }
+function migrar(x){ if(x && x.pet && !x.pet.contactos){ x.pet.contactos=[{nombre:x.pet.dueno||"",wa:x.pet.wa||"",mail:x.pet.mail||""}]; } return x; }
+function load(){ try{ return migrar(JSON.parse(localStorage.getItem(KEY))) || JSON.parse(JSON.stringify(VACIO)) }catch(e){ return JSON.parse(JSON.stringify(VACIO)) } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch(e){ alert_mem=true } }
 let alert_mem=false;
 const $ = s => document.querySelector(s);
@@ -219,25 +223,36 @@ function pintarFotos(){
   el.innerHTML = draft.fotos.map((f,i)=>`<div class="pth"><img src="${f}" data-main="${i}" alt="">${i===0?'<span class="star">Principal</span>':''}<button class="x" data-del="${i}" type="button">✕</button></div>`).join("");
   const n=$("#ncount"); if(n) n.textContent = draft.fotos.length ? `${draft.fotos.length} foto${draft.fotos.length>1?"s":""} · tocá una para hacerla principal` : "Todavía no cargaste fotos.";
 }
-function contactoHTML(d){
-  return `<div class="field"><label>Tu nombre</label><input id="f_dueno" placeholder="Ej: Fran" value="${esc(d.dueno)}"></div>
-    <div class="field"><label>Tu WhatsApp</label><input id="f_wa" inputmode="tel" placeholder="Ej: 223 555 1234" value="${esc(d.wa)}"></div>
-    <div class="field"><label>Tu mail</label><input id="f_mail" type="email" placeholder="tu@mail.com" value="${esc(d.mail)}"></div>
-    <div class="field"><label>¿Cómo querés que te escriba quien la encuentre?</label>
-      <label class="toggle" style="margin-bottom:8px"><span>Por WhatsApp</span><span class="sw"><input type="checkbox" id="f_cwa" ${d.canalWa!==false?"checked":""}><i></i></span></label>
-      <label class="toggle"><span>Por mail</span><span class="sw"><input type="checkbox" id="f_cml" ${d.canalMail!==false?"checked":""}><i></i></span></label>
-      <p class="note" style="margin-top:6px">Quien la encuentre toca un botón y se le abre la conversación con un mensaje ya escrito. Verá el contacto que elijas.</p>
-    </div>`;
+let cdraft=[{nombre:"",wa:"",mail:""}];
+function contactosHTML(){
+  return cdraft.map((c,i)=>`<div class="ccard" data-ci="${i}">
+      <div class="chead"><b>${i===0?"Contacto principal":"Contacto "+(i+1)}</b>${i>0?`<button class="quitar" data-delc="${i}" type="button">Quitar</button>`:""}</div>
+      <div class="field"><label>Nombre</label><input data-k="nombre" placeholder="${i===0?"Ej: Fran":"Ej: Mamá, Juli"}" value="${esc(c.nombre)}"></div>
+      <div class="field"><label>WhatsApp</label><input data-k="wa" inputmode="tel" placeholder="Ej: 223 555 1234" value="${esc(c.wa)}"></div>
+      <div class="field"><label>Mail</label><input data-k="mail" type="email" placeholder="nombre@mail.com" value="${esc(c.mail)}"></div>
+    </div>`).join("")
+    + `<button class="btn sec small" id="addc" type="button">+ Agregar otro contacto</button>
+       <p class="note">Quien encuentre a tu mascota va a ver un botón por cada contacto (WhatsApp o mail, según lo que completes) y elige a quién escribirle. Podés agregar todos los que quieras.</p>`;
 }
-function leerContacto(){
-  const v = id => $("#"+id).value.trim();
-  const wa=soloNum(v("f_wa")), mail=v("f_mail"), cwa=$("#f_cwa").checked, cml=$("#f_cml").checked;
-  if(!v("f_dueno")) return {err:"Poné tu nombre."};
-  if(!wa && !mail) return {err:"Poné al menos tu WhatsApp o tu mail."};
-  if(cwa && !wa) return {err:"Elegiste WhatsApp pero falta tu número."};
-  if(cml && !mail) return {err:"Elegiste mail pero falta tu mail."};
-  if(!cwa && !cml) return {err:"Dejá activado al menos un modo de contacto."};
-  return {dueno:v("f_dueno"), wa, mail, canalWa:cwa, canalMail:cml};
+function leerCards(){
+  document.querySelectorAll(".ccard").forEach(card=>{ const c=cdraft[+card.dataset.ci]; if(!c) return; card.querySelectorAll("[data-k]").forEach(i=>{ c[i.dataset.k]=i.value.trim(); }); });
+}
+function pintarContactos(){
+  const w=$("#cwrap"); if(!w) return;
+  w.innerHTML=contactosHTML();
+  $("#addc").onclick=()=>{ leerCards(); cdraft.push({nombre:"",wa:"",mail:""}); pintarContactos(); };
+  w.querySelectorAll("[data-delc]").forEach(b=>b.onclick=()=>{ leerCards(); cdraft.splice(+b.dataset.delc,1); pintarContactos(); });
+}
+function validarContactos(){
+  leerCards();
+  cdraft = cdraft.filter((c,i)=> i===0 || c.nombre || c.wa || c.mail);
+  const lista = cdraft.map(c=>({nombre:(c.nombre||"").trim(), wa:soloNum(c.wa), mail:(c.mail||"").trim()}));
+  for(let i=0;i<lista.length;i++){
+    const c=lista[i], q = i===0 ? "del contacto principal" : "del contacto "+(i+1);
+    if(!c.nombre) return {err:"Falta el nombre "+q+"."};
+    if(!c.wa && !c.mail) return {err:"Poné WhatsApp o mail "+q+"."};
+  }
+  return {contactos:lista};
 }
 function viewSetup(mode){
   const nuevo = mode==="new";
@@ -267,12 +282,13 @@ function viewSetup(mode){
     <div class="pgrid" id="pgrid"></div>
     <p class="note" id="ncount"></p>
 
-    ${nuevo?`<div class="sec-title">Tu contacto</div>${contactoHTML(d)}`:""}
+    ${nuevo?`<div class="sec-title">Contactos</div><div id="cwrap"></div>`:""}
     <button class="btn main" id="guardar">${nuevo?"Guardar y activar":"Guardar cambios"}</button>
     ${nuevo?"":`<button class="btn ghost" id="cancel">Cancelar</button>`}
     <p class="note" id="err" style="color:var(--alerta)"></p>
   </div>`;
   pintarFotos();
+  if(nuevo){ cdraft=[{nombre:"",wa:"",mail:""}]; pintarContactos(); }
   const addFotos = async files => { for(const f of files){ const u=await comprimir(f); if(u) draft.fotos.push(u); } pintarFotos(); };
   $("#f_cam").onchange = e => { addFotos([...e.target.files]); e.target.value=""; };
   $("#f_gal").onchange = e => { addFotos([...e.target.files]); e.target.value=""; };
@@ -282,7 +298,7 @@ function viewSetup(mode){
     const err = m => { $("#err").textContent = m; };
     if(!v("f_nom")) return err("Poné el nombre de tu mascota.");
     let contacto = {};
-    if(nuevo){ contacto = leerContacto(); if(contacto.err) return err(contacto.err); }
+    if(nuevo){ const r = validarContactos(); if(r.err) return err(r.err); contacto = {contactos:r.contactos}; }
     S.pet = Object.assign({}, nuevo?{}:S.pet, draft, {nombre:v("f_nom"), edad:v("f_edad"), raza:v("f_raza"), color:v("f_color"), desc:v("f_desc"), salud:v("f_salud")}, contacto);
     if(nuevo){ S.alerts=[]; S.lost=false; justActivated=true; }
     draft=null; editing=false; save(); render();
@@ -342,14 +358,19 @@ const baseMsg = () => fType==="tengo" ? `Hola, encontré a ${S.pet.nombre}. ¿C�
 function pedirUbic(){ ubic=null; if(ubicOn && navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ ubic={lat:pos.coords.latitude,lng:pos.coords.longitude}; const n=$("#ubnote"); if(n) n.textContent="📍 Ubicación lista: se agrega al mensaje."; }, ()=>{ const n=$("#ubnote"); if(n) n.textContent="No pudimos tomar tu ubicación. Podés escribir dónde estás en el mensaje."; }, {timeout:8000}); } }
 function abrirSheet(t){ fType=t; sheetOpen=true; ubicOn=true; render(); pedirUbic(); }
 function sheetHTML(){
-  const p=S.pet;
+  const p=S.pet, cs=p.contactos||[], varios=cs.length>1;
+  const botones = cs.map((c,i)=>{
+    const quien = varios ? " a "+esc(c.nombre) : "";
+    return (varios?`<p class="sec-title" style="margin-top:2px">${esc(c.nombre)}</p>`:"")
+      + (c.wa?`<button class="btn wa" data-send="wa" data-c="${i}">Enviar por WhatsApp${quien}</button>`:"")
+      + (c.mail?`<button class="btn sec" data-send="ml" data-c="${i}">Enviar por mail${quien}</button>`:"");
+  }).join("");
   return `<div class="sheet"><div>
     <h2>Avisar a su familia</h2>
     <div class="chips" id="tp"><span class="chip ${fType==="tengo"?"on":""}" data-t="tengo">La tengo conmigo</span><span class="chip ${fType==="vi"?"on":""}" data-t="vi">La vi por acá</span></div>
     <div class="field"><label>Mensaje predeterminado (podés cambiarlo)</label><textarea id="s_msg">${esc(baseMsg())}</textarea></div>
     <label class="toggle"><span>Agregar mi ubicación<small id="ubnote">Así saben dónde está ${esc(p.nombre)}.</small></span><span class="sw"><input type="checkbox" id="s_ubi" checked><i></i></span></label>
-    ${p.canalWa&&p.wa?`<button class="btn wa" id="s_wa">Enviar por WhatsApp</button>`:""}
-    ${p.canalMail&&p.mail?`<button class="btn sec" id="s_ml">Enviar por mail</button>`:""}
+    ${botones}
     <button class="btn ghost" id="s_can">Cancelar</button>
   </div></div>`;
 }
@@ -359,21 +380,20 @@ function wireSheet(){
   $("#tp").onclick=e=>{const c=e.target.closest(".chip"); if(!c) return; fType=c.dataset.t; $("#s_msg").value=baseMsg(); document.querySelectorAll("#tp .chip").forEach(x=>x.classList.toggle("on",x===c));};
   $("#s_ubi").onchange=e=>{ ubicOn=e.target.checked; if(ubicOn) pedirUbic(); else { ubic=null; $("#ubnote").textContent="No vamos a compartir tu ubicación."; } };
   $("#s_can").onclick=()=>{sheetOpen=false;render()};
-  const enviar = canal => {
-    const texto = textoFinal();
-    const url = canal==="wa" ? `https://wa.me/${waNum(p.wa)}?text=${encodeURIComponent(texto)}` : `mailto:${p.mail}?subject=${encodeURIComponent("Encontré a "+p.nombre)}&body=${encodeURIComponent(texto)}`;
-    S.alerts.unshift({id:Date.now(), tipo:fType, msg:texto, canal, coords:(ubic&&$("#s_ubi").checked)?ubic:null, ts:Date.now(), nuevo:true, resuelto:false});
-    save(); abrir(url); sheetOpen=false; thanks(url, canal, texto);
+  const enviar = (canal, i) => {
+    const c = p.contactos[i], texto = textoFinal();
+    const url = canal==="wa" ? `https://wa.me/${waNum(c.wa)}?text=${encodeURIComponent(texto)}` : `mailto:${c.mail}?subject=${encodeURIComponent("Encontré a "+p.nombre)}&body=${encodeURIComponent(texto)}`;
+    S.alerts.unshift({id:Date.now(), tipo:fType, msg:texto, canal, para:c.nombre, coords:(ubic&&$("#s_ubi").checked)?ubic:null, ts:Date.now(), nuevo:true, resuelto:false});
+    save(); abrir(url); sheetOpen=false; thanks(url, canal, texto, c);
   };
-  if($("#s_wa")) $("#s_wa").onclick=()=>enviar("wa");
-  if($("#s_ml")) $("#s_ml").onclick=()=>enviar("ml");
+  document.querySelectorAll("[data-send]").forEach(b=>b.onclick=()=>enviar(b.dataset.send, +b.dataset.c));
 }
-function thanks(url, canal, texto){
+function thanks(url, canal, texto, c){
   const p=S.pet;
   phone.innerHTML = topBar()+`<div class="content"><div class="thanks"><div class="big">💙</div><h1>¡Gracias!</h1>
-    <p class="s" style="font-size:16px">Se abrió ${canal==="wa"?"WhatsApp":"tu mail"} con el mensaje listo para la familia de ${esc(p.nombre)}. Tocá <b>enviar</b> y listo.</p></div>
+    <p class="s" style="font-size:16px">Se abrió ${canal==="wa"?"WhatsApp":"tu mail"} con el mensaje listo para ${esc(c.nombre)}, de la familia de ${esc(p.nombre)}. Tocá <b>enviar</b> y listo.</p></div>
     <a class="btn ${canal==="wa"?"wa":"sec"}" href="${esc(url)}" target="_blank" rel="noopener">Abrir ${canal==="wa"?"WhatsApp":"el mail"} de nuevo</a>
-    <div class="card"><p class="note"><b>¿No se abrió?</b> Copiá el mensaje y mandalo ${canal==="wa"?"al WhatsApp "+esc(p.wa):"a "+esc(p.mail)}.</p>
+    <div class="card"><p class="note"><b>¿No se abrió?</b> Copiá el mensaje y mandalo ${canal==="wa"?"al WhatsApp "+esc(c.wa):"a "+esc(c.mail)}.</p>
       <p class="s" id="msgtxt" style="color:var(--tinta);margin:8px 0;user-select:all">${esc(texto||"").replace(/\n/g,"<br>")}</p>
       <button class="btn sec small" id="cp">Copiar mensaje</button></div>
     <button class="btn ghost" id="v">Volver</button></div>`;
@@ -418,7 +438,7 @@ function viewInicio(){
 function alertHTML(a){
   const mapa = a.coords ? `<a class="mapbtn" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${a.coords.lat},${a.coords.lng}">📍 Ver dónde está en el mapa</a>` : `<span class="note">No compartió su ubicación.</span>`;
   return `<div class="alert ${a.nuevo?"new":""}">
-    <div class="h"><b>${a.tipo==="tengo"?"Alguien la tiene":"La vieron por acá"}</b><span>${hora(a.ts)} · por ${a.canal==="wa"?"WhatsApp":"mail"}</span></div>
+    <div class="h"><b>${a.tipo==="tengo"?"Alguien la tiene":"La vieron por acá"}</b><span>${hora(a.ts)} · por ${a.canal==="wa"?"WhatsApp":"mail"}${a.para?" a "+esc(a.para):""}</span></div>
     <q>${esc(a.msg).replace(/\n/g,"<br>")}</q>${mapa}
     <button class="btn ghost" data-res="${a.id}">Marcar como resuelto</button>
   </div>`;
@@ -440,15 +460,21 @@ function viewMascota(){
 }
 let resetArmado=false;
 function viewAjustes(){
-  const p=S.pet;
-  phone.innerHTML = topBar(`<h1 style="margin-top:14px">Ajustes</h1><p style="opacity:.9;font-size:14px;margin-top:4px">Tu contacto y cómo te escriben.</p>`)
+  cdraft = JSON.parse(JSON.stringify(S.pet.contactos && S.pet.contactos.length ? S.pet.contactos : [{nombre:"",wa:"",mail:""}]));
+  phone.innerHTML = topBar(`<h1 style="margin-top:14px">Ajustes</h1><p style="opacity:.9;font-size:14px;margin-top:4px">Tus contactos y cómo te escriben.</p>`)
   + `<div class="content">
-      ${contactoHTML(p)}
-      <button class="btn main" id="gc">Guardar contacto</button>
+      <div class="sec-title">Contactos</div>
+      <div id="cwrap"></div>
+      <button class="btn main" id="gc">Guardar contactos</button>
       <p class="note" id="err" style="color:var(--alerta)"></p>
       <div class="foot" style="margin-top:20px"><a id="rst">Reiniciar la demo</a></div>
     </div>` + navHTML();
-  $("#gc").onclick=()=>{ const c=leerContacto(); if(c.err){ $("#err").textContent=c.err; return; } Object.assign(S.pet,c); save(); $("#err").style.color="var(--ok)"; $("#err").textContent="Guardado ✔"; };
+  pintarContactos();
+  $("#gc").onclick=()=>{
+    const r=validarContactos();
+    if(r.err){ $("#err").style.color="var(--alerta)"; $("#err").textContent=r.err; return; }
+    S.pet.contactos=r.contactos; save(); pintarContactos(); $("#err").style.color="var(--ok)"; $("#err").textContent="Guardado ✔";
+  };
   $("#rst").onclick=()=>{
     const b=$("#rst");
     if(!resetArmado){ resetArmado=true; b.textContent="¿Seguro? Tocá de nuevo para borrar todo"; setTimeout(()=>{resetArmado=false; if($("#rst")) $("#rst").textContent="Reiniciar la demo"},3000); return; }
